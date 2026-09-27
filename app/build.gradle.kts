@@ -24,16 +24,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-            )
-            ndk {
-                abiFilters.add("arm64-v8a")
-            }
-        }
         release {
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
@@ -44,6 +34,12 @@ android {
             ndk {
                 abiFilters.add("arm64-v8a")
             }
+        }
+        create("staging") {
+            initWith(getByName("release"))
+            matchingFallbacks.add("release")
+            signingConfig = signingConfigs.getByName("debug")
+            applicationIdSuffix = ".staging"
         }
     }
     compileOptions {
@@ -59,7 +55,12 @@ android {
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
-            output.outputFileName.set("call-help.apk")
+            output.outputFileName.set("call-help-debug.apk")
+        }
+    }
+    onVariants(selector().withBuildType("staging")) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("call-help-staging.apk")
         }
     }
 }
